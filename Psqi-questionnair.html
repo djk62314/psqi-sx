@@ -1,0 +1,368 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pittsburgh Sleep Quality Index (PSQI) Questionnaire</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .form-section {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            margin-bottom: 2rem;
+        }
+        .question-group {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .question-group:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        label {
+            font-weight: 600;
+            color: #374151;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        input[type="text"], input[type="time"], input[type="number"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            transition: border-color 0.2s;
+        }
+        input[type="text"]:focus, input[type="time"]:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
+        }
+        .radio-group label {
+            font-weight: 400;
+            margin-left: 0.5rem;
+        }
+        .radio-group div {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .modal.is-visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            transform: scale(0.95);
+            transition: transform 0.3s;
+        }
+        .modal.is-visible .modal-content {
+             transform: scale(1);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-gray-800">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-800">Pittsburgh Sleep Quality Index (PSQI)</h1>
+            <p class="mt-2 text-slate-600 max-w-2xl mx-auto">This questionnaire assesses your sleep quality over the past month. Your responses and scores are private to you.</p>
+            <div id="userInfo" class="mt-4 text-sm text-gray-500">Connecting...</div>
+        </header>
+
+        <main>
+            <form id="psqi-form" class="form-section">
+                <p class="text-sm text-gray-500 mb-6">Instructions: The following questions relate to your usual sleep habits during the past month only. Your answers should indicate the most accurate reply for the majority of days and nights in the past month.</p>
+                
+                <!-- Questions 1-4 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="question-group">
+                        <label for="q1">1. When have you usually gone to bed at night? <span class="font-normal text-gray-500">(the time when you try to sleep, or time when to go to bed to sleep but not the time when have actually fallen asleep)</span></label>
+                        <input type="time" id="q1" name="q1" required>
+                    </div>
+                    <div class="question-group">
+                        <label for="q2">2. How long (in minutes) has it usually taken you to fall asleep each night?</label>
+                        <input type="number" id="q2" name="q2" min="0" placeholder="e.g., 15" required>
+                    </div>
+                    <div class="question-group">
+                        <label for="q3">3. When have you usually gotten up in the morning?</label>
+                        <input type="time" id="q3" name="q3" required>
+                    </div>
+                    <div class="question-group">
+                        <label for="q4">4. How many hours of actual sleep did you get at night? (This may be different than the number of hours you spend in bed)</label>
+                        <input type="number" id="q4" name="q4" min="0" max="24" step="0.5" placeholder="e.g., 7.5" required>
+                    </div>
+                </div>
+
+                <!-- Question 5 -->
+                <div class="question-group">
+                    <label>5. During the past month, how often have you had trouble sleeping because you...</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 mt-4">
+                        <div><p class="font-medium text-gray-700 mb-2">a. Cannot get to sleep within 30 minutes</p><div class="radio-group" id="q5a"><div><input type="radio" name="q5a" value="0" required><label>Not during the past month</label></div><div><input type="radio" name="q5a" value="1"><label>Less than once a week</label></div><div><input type="radio" name="q5a" value="2"><label>Once or twice a week</label></div><div><input type="radio" name="q5a" value="3"><label>Three or more times a week</label></div></div></div>
+                        <div><p class="font-medium text-gray-700 mb-2">b. Wake up in the middle of the night or early morning</p><div class="radio-group" id="q5b"><div><input type="radio" name="q5b" value="0" required><label>Not during the past month</label></div><div><input type="radio" name="q5b" value="1"><label>Less than once a week</label></div><div><input type="radio" name="q5b" value="2"><label>Once or twice a week</label></div><div><input type="radio" name="q5b" value="3"><label>Three or more times a week</label></div></div></div>
+                        <div><p class="font-medium text-gray-700 mb-2">c. Have to get up to use the bathroom</p><div class="radio-group" id="q5c"><div><input type="radio" name="q5c" value="0" required><label>Not during the past month</label></div><div><input type="radio" name="q5c" value="1"><label>Less than once a week</label></div><div><input type="radio" name="q5c" value="2"><label>Once or twice a week</label></div><div><input type="radio" name="q5c" value="3"><label>Three or more times a week</label></div></div></div>
+                        <div><p class="font-medium text-gray-700 mb-2">d. Cannot breathe comfortably</p><div class="radio-group" id="q5d"><div><input type="radio" name="q5d" value="0" required><label>Not during the past month</label></div><div><input type="radio" name="q5d" value="1"><label>Less than once a week</label></div><div><input type="radio" name="q5d" value="2"><label>Once or twice a week</label></div><div><input type="radio" name="q5d" value="3"><label>Three or more times a week</label></div></div></div>
+                        <div><p class="font-medium text-gray-700 mb-2">e. Cough or snore loudly</p><div class="radio-group" id="q5e"><div><input type="radio" name="q5e" value="0" required><label>Not during the past month</label></div><div><input type="radio" name="q5e" value="1"><label>Less than once a week</label></div><div><input type="radio" name="q5e" value="2"><label>Once or twice a week</label></div><div><input type="radio" name="q5e" value="3"><label>Three or more times a week</label></div></div></div>
+                        <div><p class="font-medium text-gray-700 mb-2">f. Feel too cold</p><div class="radio-group" id="q5f"><div><input type="radio" name="q5f" value="0" required><label>Not during the past month</label></div><div><input type="radio" name="q5f" value="1"><label>Less than once a week</label></div><div><input type="radio" name="q5f" value="2"><label>Once or twice a week</label></div><div><input type="radio" name="q5f" value="3"><label>Three or more times a week</label></div></div></div>
+                        <div><p class="font-medium text-gray-700 mb-2">g. Feel too hot</p><div class="radio-group" id="q5g"><div><input type="radio" name="q5g" value="0" required><label>Not during the past month</label></div><div><input type="radio" name="q5g" value="1"><label>Less than once a week</label></div><div><input type="radio" name="q5g" value="2"><label>Once or twice a week</label></div><div><input type="radio" name="q5g" value="3"><label>Three or more times a week</label></div></div></div>
+                        <div><p class="font-medium text-gray-700 mb-2">h. Had bad dreams</p><div class="radio-group" id="q5h"><div><input type="radio" name="q5h" value="0" required><label>Not during the past month</label></div><div><input type="radio" name="q5h" value="1"><label>Less than once a week</label></div><div><input type="radio" name="q5h" value="2"><label>Once or twice a week</label></div><div><input type="radio" name="q5h" value="3"><label>Three or more times a week</label></div></div></div>
+                        <div><p class="font-medium text-gray-700 mb-2">i. Have pain</p><div class="radio-group" id="q5i"><div><input type="radio" name="q5i" value="0" required><label>Not during the past month</label></div><div><input type="radio" name="q5i" value="1"><label>Less than once a week</label></div><div><input type="radio" name="q5i" value="2"><label>Once or twice a week</label></div><div><input type="radio" name="q5i" value="3"><label>Three or more times a week</label></div></div></div>
+                         <div>
+                            <p class="font-medium text-gray-700 mb-2">j. Other reason(s), please describe</p>
+                            <input type="text" id="q5j_reason" name="q5j_reason" placeholder="Describe other reason" class="mb-2">
+                             <div class="radio-group" id="q5j"><div><input type="radio" name="q5j" value="0" required><label>Not during the past month</label></div><div><input type="radio" name="q5j" value="1"><label>Less than once a week</label></div><div><input type="radio" name="q5j" value="2"><label>Once or twice a week</label></div><div><input type="radio" name="q5j" value="3"><label>Three or more times a week</label></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Questions 6-9 -->
+                <div class="question-group">
+                    <label>6. During the past month, how would you rate your sleep quality overall?</label>
+                    <div class="radio-group" id="q6">
+                        <div><input type="radio" name="q6" value="0" required><label>Very good</label></div>
+                        <div><input type="radio" name="q6" value="1"><label>Fairly good</label></div>
+                        <div><input type="radio" name="q6" value="2"><label>Fairly bad</label></div>
+                        <div><input type="radio" name="q6" value="3"><label>Very bad</label></div>
+                    </div>
+                </div>
+                <div class="question-group">
+                    <label>7. During the past month, how often have you taken medicine to help you sleep?</label>
+                     <div class="radio-group" id="q7">
+                        <div><input type="radio" name="q7" value="0" required><label>Not during the past month</label></div>
+                        <div><input type="radio" name="q7" value="1"><label>Less than once a week</label></div>
+                        <div><input type="radio" name="q7" value="2"><label>Once or twice a week</label></div>
+                        <div><input type="radio" name="q7" value="3"><label>Three or more times a week</label></div>
+                    </div>
+                </div>
+                <div class="question-group">
+                    <label>8. During the past month, how often have you had trouble staying awake while driving, eating meals, or engaging in social activity?</label>
+                     <div class="radio-group" id="q8">
+                        <div><input type="radio" name="q8" value="0" required><label>Not during the past month</label></div>
+                        <div><input type="radio" name="q8" value="1"><label>Less than once a week</label></div>
+                        <div><input type="radio" name="q8" value="2"><label>Once or twice a week</label></div>
+                        <div><input type="radio" name="q8" value="3"><label>Three or more times a week</label></div>
+                    </div>
+                </div>
+                <div class="question-group">
+                    <label>9. During the past month, how much of a problem has it been for you to keep up enough enthusiasm to get things done?</label>
+                    <div class="radio-group" id="q9">
+                        <div><input type="radio" name="q9" value="0" required><label>No problem at all</label></div>
+                        <div><input type="radio" name="q9" value="1"><label>Only a very slight problem</label></div>
+                        <div><input type="radio" name="q9" value="2"><label>Somewhat of a problem</label></div>
+                        <div><input type="radio" name="q9" value="3"><label>A very big problem</label></div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-8">
+                    <button type="submit" id="submit-btn" class="bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 transition duration-300 transform hover:scale-105 disabled:bg-gray-400 disabled:cursor-not-allowed">
+                        Calculate Score & Submit
+                    </button>
+                </div>
+            </form>
+            
+            <div id="history-section" class="mt-12">
+                <h2 class="text-2xl font-bold text-center text-slate-700 mb-6">My Response History</h2>
+                <div id="history-container" class="space-y-4">
+                    <p class="text-center text-gray-500">Loading your previous responses...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Results Modal -->
+    <div id="results-modal" class="modal">
+        <div class="modal-content text-center">
+            <h2 class="text-2xl font-bold mb-4">Your PSQI Score</h2>
+            <div id="score-display" class="mb-6"></div>
+            <button id="close-modal-btn" class="mt-6 bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition">Close</button>
+        </div>
+    </div>
+
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-psqi-app';
+
+        let app, auth, db, userId;
+
+        const psqiForm = document.getElementById('psqi-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const resultsModal = document.getElementById('results-modal');
+        const scoreDisplay = document.getElementById('score-display');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const historyContainer = document.getElementById('history-container');
+        const userInfoDiv = document.getElementById('userInfo');
+        
+        async function initializeFirebase() {
+            try {
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                setLogLevel('debug');
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        userInfoDiv.textContent = `Your Private Session ID: ${userId}`;
+                        loadHistory();
+                    } else {
+                         try {
+                            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                                await signInWithCustomToken(auth, __initial_auth_token);
+                            } else {
+                                await signInAnonymously(auth);
+                            }
+                        } catch (error) {
+                            console.error("Authentication failed: ", error);
+                            userInfoDiv.textContent = "Error: Could not establish a secure session.";
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error("Firebase initialization failed:", error);
+                userInfoDiv.textContent = "Error: Could not connect to the database.";
+            }
+        }
+        
+        function calculatePSQIScore(answers) {
+            const scores = { comp1: 0, comp2: 0, comp3: 0, comp4: 0, comp5: 0, comp6: 0, comp7: 0, global: 0 };
+            scores.comp1 = answers.q6;
+            let latencyScore = 0;
+            if (answers.q2 <= 15) latencyScore = 0; else if (answers.q2 <= 30) latencyScore = 1; else if (answers.q2 <= 60) latencyScore = 2; else latencyScore = 3;
+            const comp2Sum = latencyScore + answers.q5a;
+            if (comp2Sum === 0) scores.comp2 = 0; else if (comp2Sum <= 2) scores.comp2 = 1; else if (comp2Sum <= 4) scores.comp2 = 2; else scores.comp2 = 3;
+            if (answers.q4 > 7) scores.comp3 = 0; else if (answers.q4 >= 6) scores.comp3 = 1; else if (answers.q4 >= 5) scores.comp3 = 2; else scores.comp3 = 3;
+            const bedtime = new Date(`1970-01-01T${answers.q1}`);
+            let waketime = new Date(`1970-01-01T${answers.q3}`);
+            if (waketime < bedtime) { waketime.setDate(waketime.getDate() + 1); }
+            const hoursInBed = (waketime - bedtime) / (1000 * 60 * 60);
+            if (hoursInBed > 0) {
+                const sleepEfficiency = (answers.q4 / hoursInBed) * 100;
+                if (sleepEfficiency >= 85) scores.comp4 = 0; else if (sleepEfficiency >= 75) scores.comp4 = 1; else if (sleepEfficiency >= 65) scores.comp4 = 2; else scores.comp4 = 3;
+            } else {
+                scores.comp4 = 3; 
+            }
+            const disturbanceSum = answers.q5b + answers.q5c + answers.q5d + answers.q5e + answers.q5f + answers.q5g + answers.q5h + answers.q5i + answers.q5j;
+            if (disturbanceSum === 0) scores.comp5 = 0; else if (disturbanceSum <= 9) scores.comp5 = 1; else if (disturbanceSum <= 18) scores.comp5 = 2; else scores.comp5 = 3;
+            scores.comp6 = answers.q7;
+            const dysfunctionSum = answers.q8 + answers.q9;
+            if (dysfunctionSum === 0) scores.comp7 = 0; else if (dysfunctionSum <= 2) scores.comp7 = 1; else if (dysfunctionSum <= 4) scores.comp7 = 2; else scores.comp7 = 3;
+            scores.global = scores.comp1 + scores.comp2 + scores.comp3 + scores.comp4 + scores.comp5 + scores.comp6 + scores.comp7;
+            return scores;
+        }
+        
+        async function saveResponse(answers, scores) {
+            if (!db || !userId) {
+                 console.error("DB or UserID not available for saving.");
+                 return;
+            }
+            try {
+                const collectionPath = `/artifacts/${appId}/users/${userId}/psqi_responses`;
+                await addDoc(collection(db, collectionPath), {
+                    answers: answers, 
+                    scores: scores, 
+                    createdAt: new Date(),
+                });
+            } catch (error) {
+                console.error("Error saving response to Firestore: ", error);
+            }
+        }
+        
+        function loadHistory() {
+             if (!db || !userId) {
+                 console.error("DB or UserID not available for loading history.");
+                 return;
+             }
+             const collectionPath = `/artifacts/${appId}/users/${userId}/psqi_responses`;
+             const q = query(collection(db, collectionPath));
+
+             onSnapshot(q, (querySnapshot) => {
+                 historyContainer.innerHTML = '';
+                 if (querySnapshot.empty) {
+                     historyContainer.innerHTML = '<p class="text-center text-gray-500">You have no previous responses.</p>';
+                     return;
+                 }
+                 const responses = [];
+                 querySnapshot.forEach(doc => responses.push(doc.data()));
+                 responses.sort((a,b) => b.createdAt.toDate() - a.createdAt.toDate());
+                 responses.forEach(data => {
+                     const card = document.createElement('div');
+                     card.className = 'bg-white p-4 rounded-lg shadow-sm border border-gray-200';
+                     const scoreColor = data.scores.global > 5 ? 'text-red-600' : 'text-green-600';
+                     const scoreText = data.scores.global > 5 ? 'Poor Sleep Quality' : 'Good Sleep Quality';
+                     card.innerHTML = `<div class="flex justify-between items-start"><div><p class="font-semibold text-lg">Global Score: <span class="font-bold ${scoreColor}">${data.scores.global}</span></p><p class="text-sm ${scoreColor}">${scoreText}</p><p class="text-xs text-gray-400 mt-2">Submitted on: ${data.createdAt.toDate().toLocaleString()}</p></div></div>`;
+                     historyContainer.appendChild(card);
+                 });
+             }, (error) => {
+                 console.error("Error loading history: ", error);
+                 historyContainer.innerHTML = '<p class="text-center text-red-500">Error loading your response history.</p>';
+             });
+        }
+        
+        psqiForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Calculating...';
+
+            const formData = new FormData(psqiForm);
+            const answers = {
+                q1: formData.get('q1'), q2: parseInt(formData.get('q2')), q3: formData.get('q3'), q4: parseFloat(formData.get('q4')),
+                q5a: parseInt(formData.get('q5a')), q5b: parseInt(formData.get('q5b')), q5c: parseInt(formData.get('q5c')), q5d: parseInt(formData.get('q5d')), q5e: parseInt(formData.get('q5e')),
+                q5f: parseInt(formData.get('q5f')), q5g: parseInt(formData.get('q5g')), q5h: parseInt(formData.get('q5h')), q5i: parseInt(formData.get('q5i')), q5j: parseInt(formData.get('q5j')),
+                q6: parseInt(formData.get('q6')), q7: parseInt(formData.get('q7')), q8: parseInt(formData.get('q8')), q9: parseInt(formData.get('q9')),
+            };
+            
+            const scores = calculatePSQIScore(answers);
+            await saveResponse(answers, scores);
+
+            let interpretation = scores.global > 5 
+                ? '<p class="text-red-600 font-semibold">A score greater than 5 is indicative of poor sleep quality.</p>' 
+                : '<p class="text-green-600 font-semibold">A score of 5 or less indicates good sleep quality.</p>';
+            scoreDisplay.innerHTML = `<p class="text-5xl font-bold mb-4">${scores.global}</p>${interpretation}`;
+            
+            resultsModal.classList.add('is-visible');
+            psqiForm.reset();
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Calculate Score & Submit';
+        });
+        
+        closeModalBtn.addEventListener('click', () => {
+            resultsModal.classList.remove('is-visible');
+        });
+
+        initializeFirebase();
+    </script>
+</body>
+</html>
+           
